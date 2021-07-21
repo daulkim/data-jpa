@@ -4,6 +4,10 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@NamedQuery(
+        name="Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "username", "age"})
 @Getter @Setter
