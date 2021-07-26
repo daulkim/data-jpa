@@ -14,6 +14,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,8 @@ class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -206,5 +210,25 @@ class MemberRepositoryTest {
 //        assertThat(slice.isFirst()).isTrue();
 //        assertThat(slice.hasNext()).isTrue();
 
+    }
+
+    @Test
+    public void bulkAgePlus() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        // when
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        // 벌크 수정 시 바로 DB에 저장 -> 영속성컨텍스트에는 원래 값이 들어가 있으므로 비워줘야 함
+        // spring jpa Modifyingdp clear옵션 주면 알아서 됨
+        // em.clear();
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
     }
 }
