@@ -225,10 +225,40 @@ class MemberRepositoryTest {
         int resultCount = memberRepository.bulkAgePlus(20);
 
         // 벌크 수정 시 바로 DB에 저장 -> 영속성컨텍스트에는 원래 값이 들어가 있으므로 비워줘야 함
-        // spring jpa Modifyingdp clear옵션 주면 알아서 됨
+        // spring jpa Modifying clear 옵션 주면 알아서 됨
         // em.clear();
 
         // then
         assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    public void findMemberLazy() {
+        // given
+        // member1 -> teamA
+        // member2 -> teamB
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        // N+1 문제
+        List<Member> members = memberRepository.findMemberEntityGraphByUsername("member1");
+
+        for (Member member : members) {
+            System.out.println("member = " + member.getUsername());
+            // getName() 할 때 진짜로 team 조회 -> getTeam()까지는 proxy
+            System.out.println("team = "+ member.getTeam().getClass());
+            System.out.println("team = "+ member.getTeam().getName());
+        }
     }
 }
