@@ -10,7 +10,7 @@ import java.util.List;
 @ToString(of = {"id", "name"})
 @Getter @Setter
 @Entity
-public class Team {
+public class Team extends BaseEntity{
 
     @Id @GeneratedValue
     @Column(name = "team_id")

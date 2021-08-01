@@ -13,7 +13,7 @@ import javax.persistence.*;
 @ToString(of = {"id", "username", "age"})
 @Getter @Setter
 @Entity
-public class Member {
+public class Member extends BaseEntity{
 
     @Id @GeneratedValue
     @Column(name = "member_id")
